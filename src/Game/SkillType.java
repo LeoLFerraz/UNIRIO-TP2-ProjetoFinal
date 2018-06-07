@@ -2,16 +2,16 @@ package Game;
 
 public enum SkillType {
 
-	OFFENSIVE("offensive"), DEFENSIVE("defensive");
+	OFFENSIVE(0), DEFENSIVE(1);
 	
-	private String type;
+	private int type;
 	
-	SkillType(String type)
+	SkillType(int type)
 	{
 		this.type = type;
 	}
 	
-	public String getType()
+	public int getType()
 	{
 		return type;
 	}

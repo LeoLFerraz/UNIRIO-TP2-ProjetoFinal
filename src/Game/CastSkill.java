@@ -2,7 +2,7 @@ package Game;
 
 public interface CastSkill {
 	
-	public static void castSkill(int numberOfSkill) 
+	public static void castSkill(int skillNumber) 
 	{
 		
 	}

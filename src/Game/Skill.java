@@ -2,24 +2,25 @@ package Game;
 
 public enum Skill {
 	
-	FIREBALL("offensive", 50, 2, 1, 1, 1);
+	//Wizard's skills
+	FIREBALL(0, 50, 0, 0, 2),
+	EARTHQUAKE(0, 100, 0, 0, 2),
+	MAGICSHIELD(1, 70, 0, 2, 0),
+	MAGICWAVE(0, 200, 0, 0, 3); 
 	
-	private String skillType;
+	private int skillType;
 	private int baseValue;
-	private int strenghtModifier;
+	private int strengthModifier;
 	private int enduranceModifier;
 	private int intelligenceModifier;
-	private int luckModifier;
 	
-	Skill(String skillType, int baseValue, int strenghtModifier, int enduranceModifier, int intelligenceModifier,
-			int luckModifier)
+	Skill(int skillType, int baseValue, int strengthModifier, int enduranceModifier, int intelligenceModifier)
 	{
 		this.skillType = skillType;
 		this.baseValue = baseValue;
-		this.strenghtModifier = strenghtModifier;
+		this.strengthModifier = strengthModifier;
 		this.enduranceModifier = enduranceModifier;
 		this.intelligenceModifier = intelligenceModifier;
-		this.luckModifier = luckModifier;
 	}
 	
 	public int getBaseValue()
@@ -27,9 +28,9 @@ public enum Skill {
 		return baseValue;
 	}
 	
-	public int getStrenghtModifier()
+	public int getStrengthModifier()
 	{
-		return strenghtModifier;
+		return strengthModifier;
 	}
 	
 	public int getEnduranceModifier()
@@ -42,13 +43,19 @@ public enum Skill {
 		return intelligenceModifier;
 	}
 	
-	public int getLuckModifier()
+	public void cast(int actorStrength, int actorEndurance, int actorIntelligence, Actor targetIfOffensive)
 	{
-		return luckModifier;
-	}
-	
-	public void cast()
-	{
+		int finalDamage = 0;
 		
+		finalDamage = this.baseValue + (actorStrength * this.strengthModifier) + (actorEndurance * this.enduranceModifier) + (actorIntelligence * this.intelligenceModifier);
+		
+		if(this.skillType == SkillType.OFFENSIVE.getType())
+		{
+			targetIfOffensive.setHp(targetIfOffensive.getHp() - Math.max(finalDamage - targetIfOffensive.getEndurance(), 0));
+		}
+		else if(this.skillType == SkillType.DEFENSIVE.getType())
+		{
+			
+		}
 	}
 }
