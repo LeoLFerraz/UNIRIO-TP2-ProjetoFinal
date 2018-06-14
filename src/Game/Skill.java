@@ -43,7 +43,7 @@ public enum Skill {
 		return intelligenceModifier;
 	}
 	
-	public void cast(int actorStrength, int actorEndurance, int actorIntelligence, Actor targetIfOffensive)
+	/*public void cast(int actorStrength, int actorEndurance, int actorIntelligence, Actor targetIfOffensive)
 	{
 		int finalDamage = 0;
 		
@@ -52,6 +52,22 @@ public enum Skill {
 		if(this.skillType == SkillType.OFFENSIVE.getType())
 		{
 			targetIfOffensive.setHp(targetIfOffensive.getHp() - Math.max(finalDamage - targetIfOffensive.getEndurance(), 0));
+		}
+		else if(this.skillType == SkillType.DEFENSIVE.getType())
+		{
+			
+		}
+	}*/
+	public void cast(Actor caster, Actor target)
+	{
+		int finalDamage = 0;
+		
+		finalDamage = this.baseValue + (caster.getStrength() * this.strengthModifier) + (caster.getEndurance() 
+					* this.enduranceModifier) + (caster.getIntelligence() * this.intelligenceModifier);
+		
+		if(this.skillType == SkillType.OFFENSIVE.getType())
+		{
+			target.setHp(target.getHp() - Math.max(finalDamage - target.getEndurance(), 0));
 		}
 		else if(this.skillType == SkillType.DEFENSIVE.getType())
 		{
