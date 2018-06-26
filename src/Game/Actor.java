@@ -12,7 +12,7 @@ package Game;
 	    private int endurance = 0;
 	    private int intelligence = 0;
 	    private int level = 0; 
-	    private ArrayList<Skill> skills = new ArrayList(); 
+	    private ArrayList<Skill> skillSet = new ArrayList(); 
 
 	    public String getName() {
 	        return name;
@@ -62,12 +62,12 @@ package Game;
 	        this.level = level;
 	    }
 	    
-	    public ArrayList<Skill> getSkills() {
-	        return skills;
+	    public ArrayList<Skill> getSkillSet() {
+	        return skillSet;
 	    }
 
 	    public void setSkills(ArrayList<Skill> skills) {
-	        this.skills = skills;
+	        this.skills = skillSet;
 	    }
 
 	}
