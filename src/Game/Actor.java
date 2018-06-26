@@ -66,7 +66,7 @@ package Game;
 	        return skillSet;
 	    }
 
-	    public void setSkills(ArrayList<Skill> skills) {
+	    public void setSkillSet(ArrayList<Skill> skills) {
 	       this.skillSet = skills;
 	    }
 
