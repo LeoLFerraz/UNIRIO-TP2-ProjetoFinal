@@ -9,11 +9,11 @@ public class Player extends Actor implements CastSkill {
 	Player(String newName, PlayerClass newPlayerClass){
 		super(newName);
 		this.playerClass = newPlayerClass;
-				this.setStr(this.playerClass.getBaseStr());
-				this.setStr(this.playerClass.getBaseStr());
-				this.setStr(this.playerClass.getBaseStr());
-				this.setStr(this.playerClass.getBaseStr());
-				this.setStr(this.playerClass.getBaseStr());
+		this.setStr(this.playerClass.getBaseStr());
+		this.setEnd(this.playerClass.getBaseEnd());
+		this.setInt(this.playerClass.getBaseInt());
+		this.setLuck(this.playerClass.getBaseLuck());
+		this.updateMaxHp();
 	}
 	
 	// Getters:

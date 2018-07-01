@@ -74,6 +74,7 @@ public enum PlayerClass {
 			case 3: return PlayerClass.WIZARD;
 			case 4: return PlayerClass.THIEF;
 		}
+		// No treatment needed here. This is a composed function only. Treat the caller for null point exception plz.
 		return null;
 	}
 }
