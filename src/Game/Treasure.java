@@ -1,4 +1,4 @@
-package Game;
+package corepckg;
 
 public class Treasure {
 
