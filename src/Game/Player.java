@@ -38,4 +38,9 @@ public class Player extends Actor implements CastSkill {
 	}
 	
 	// Methods:
+	public int castSkill(int skillIndex, Actor target) { // [Needs refactoring to allow multiple entities as target.]
+														 // Returns the damage dealt by the target, which [also needs refactoring, as we should have both damaging and healing spells]
+		return this.getSkillSet().get(skillIndex).cast(this, target);
+	}
+	
 }

@@ -28,6 +28,10 @@ public class Floor {
 		return Floor.floorList.size();
 	}
 	
+	public Enemy getEnemy() {
+		return this.enemy;
+	}
+	
 	// Setters:
 	public static void addFloor(Floor newFloor) {
 		Floor.floorList.add(newFloor);

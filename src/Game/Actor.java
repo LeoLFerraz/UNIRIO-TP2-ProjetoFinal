@@ -16,7 +16,7 @@ public abstract class Actor {
 	// Constructors:
 	Actor(String newName) {
 		this.name = newName;
-		skillSet = new ArrayList<Skill>();
+		this.skillSet = new ArrayList<Skill>();
 	}
 	
 	// Getters:

@@ -1,12 +1,12 @@
 package corepckg;
 import java.util.ArrayList;
 
-public enum PlayerClass {
+public enum PlayerClass { // [NEED TO REWORK THE SKILL ACCESS TO USE SKILL CODE, NOT ENUMERATOR NAME.]
 	// Instances:
-	WARRIOR("Warrior", 20, 15, 5, 5, 2, 2, 0, 0, 1, Skill.SWORDATTACK, Skill.MORTALASSAULT, Skill.BIGSHIELD, Skill.TWOHANDEDSWORDATTACK),
-	RANGER("Ranger", 10, 15, 10, 10, 2, 1, 1, 1, 2, Skill.FIREARROW, Skill.ICEARROW, Skill.RUN, Skill.ALMIGHTYARROW),
+	WARRIOR("Warrior", 20, 15, 5, 5, 2, 2, 0, 0, 1, Skill.SWORDSLASH, Skill.ASSAULT, Skill.SHIELDSLAM, Skill.PUMMELING),
+	RANGER("Ranger", 10, 15, 10, 10, 2, 1, 1, 1, 2, Skill.FIREARROW, Skill.ICEARROW, Skill.MYSTICPOWDER, Skill.ANIMALCOMPANION),
 	WIZARD("Wizard", 5, 10, 20, 10, 0, 1, 3, 1, 3, Skill.FIREBALL, Skill.EARTHQUAKE, Skill.MAGICSLAM, Skill.MAGICWAVE),
-	THIEF("Thief", 10, 10, 10, 20, 1, 1, 1, 3, 4, Skill.STEALTHASSAULT, Skill.STEALINGMOVE, Skill.MASTEREVASIVE, Skill.MASSIVEQUICKATTACKS);
+	THIEF("Thief", 10, 10, 10, 20, 1, 1, 1, 3, 4, Skill.STEALTHASSAULT, Skill.STEALINGMOVE, Skill.BURGLARY, Skill.RIPOSTE);
 	
 	// Attributes:
 	private final String className;
