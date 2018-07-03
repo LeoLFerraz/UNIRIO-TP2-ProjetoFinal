@@ -1,13 +1,8 @@
 package corepckg;
 import java.util.Scanner;
-
-import com.googlecode.lanterna.gui.Window;
-
 import java.util.ArrayList;
-//import com.sun.glass.ui.Window;
-//import com.googlecode.lanterna.*;
 
-public abstract class GameDirector extends GUIInterface {
+public abstract class GameDirector {
 	// This is an abstract, "static" class. All of its methods and attributes are static and it is not meant to be instantiated.
 	// The GameDirector is responsible for:
 	// * Managing the game loop;
@@ -22,7 +17,7 @@ public abstract class GameDirector extends GUIInterface {
 	// understand each minute of the entire system.
 	
 	// Attributes:
-	private static int gameInterface = 1; // Used to determine how user input and output will be handled;
+	private static int gameInterface = 0; // Used to determine how user input and output will be handled;
 									  // 0 = Terminal Interface
 									  // 1 = GUI Interface
 	
@@ -39,7 +34,7 @@ public abstract class GameDirector extends GUIInterface {
 															
 	private static final Scanner userInput = new Scanner(System.in); // Used for handling user input;
 	
-	private static Player player; // The Player reference in GameDirector SHOULD be final,
+	public static Player player; // The Player reference in GameDirector SHOULD be final,
 								  // but we can only set final variables in their initialization or in the constructor, and
 								  // "player" is only initialized later into the game;
 								  // We have two possible solutions: declare the attribute as non-final private and have
@@ -153,7 +148,7 @@ public abstract class GameDirector extends GUIInterface {
 			startTerminalGame();
 		}
 		else {
-			directorCall();
+			startGUIGame();
 		}
 	}
 	
@@ -161,7 +156,7 @@ public abstract class GameDirector extends GUIInterface {
 		
 	}
 	
-	private static void startTerminalGame() { // Starts the game in the IDE's console interface.
+	private static void printStartingText() {
 		GameDirector.say("Loading textures...");
 		GameDirector.waitSeconds(2);
 		GameDirector.say("Unpacking models...");
@@ -178,13 +173,17 @@ public abstract class GameDirector extends GUIInterface {
 		waitSeconds(1);
 		GameDirector.say("Starting game in 1...");
 		GameDirector.waitSeconds(1);
+	}
+	
+	private static void startTerminalGame() { // Starts the game in the IDE's console interface.
+		printStartingText();
 		GameDirector.goToNewGameScreen(); // [Must be refactored to use gameState]
 	}
 	
 	private static void goToNewGameScreen() {
 		String playerName;
 		PlayerClass playerClass;
-		while(true) { // [atomicize the following block as "renderPlayerNameInputInterface" and adapt goToNewGameScreen to use it.]
+		while(true) { // [atomicize the following block as "renderPlayerNameInput" and adapt goToNewGameScreen to use it.]
 			try {
 				clearTerminal();
 				GameDirector.say("Please, type your desired nickname");
@@ -197,7 +196,7 @@ public abstract class GameDirector extends GUIInterface {
 				// [maybe insert max attempts?]
 			}
 		}
-		while(true) { // [atomicize the following block as "renderPlayerClassInputInterface" and adapt goToNewGameScreen to use it.]
+		while(true) { // [atomicize the following block as "renderPlayerClassInput" and adapt goToNewGameScreen to use it.]
 			try {
 				GameDirector.say("Choose your class:");
 				GameDirector.say("1 - Warrior: A sturdy, honored fighter that overcomes his foes with use of brute force. Not very smart, though.");
@@ -239,12 +238,8 @@ public abstract class GameDirector extends GUIInterface {
 	}
 	
 	private static boolean nextFloor() { // True for player wins, false for player loses
-		// instantiate floor
-		// print floor information
-		// print 'enemy has appeared'
-		// execute battle
 		GameDirector.clearTerminal();
-		Floor currentFloor = new Floor();
+		Floor currentFloor = new Floor(); // Each floor instantiates its own enemies.
 		String currentEnemyName = currentFloor.getEnemyName();
 		GameDirector.say("The stairs take you to Floor #" + Floor.getNumberOfFloors());
 		GameDirector.waitSeconds(1);
@@ -261,14 +256,14 @@ public abstract class GameDirector extends GUIInterface {
 		}
 	}
 	
-	static boolean executeBattle(Floor currentFloor) { // True for player wins, false for player loses;
+	private static boolean executeBattle(Floor currentFloor) { // True for player wins, false for player loses;
 		// Turn 1:
 	// print player name and health
 	// print enemy name and health
 	// print player's options
 	// execute player's choice.
 	// print damage dealt or healed by player's choice.
-	// endTurn(); <-- Checks if either are dead.
+	// endTurn(); <-- Checks if either are dead, switches
 		// Turn 2:
 	// print player name and health
 	// print enemy name and health
@@ -282,13 +277,36 @@ public abstract class GameDirector extends GUIInterface {
 		String playerName = GameDirector.getPlayer().getName();
 		int playerCurrentHp = GameDirector.getPlayer().getCurHp();
 		int playerMaxHp = GameDirector.getPlayer().getMaxHp();
+		int castSkillIndex;
+		int damageDealt;
+		// start startTurn() function;
 		GameDirector.say(playerName + ": " + playerCurrentHp + "/" + playerMaxHp);
 		GameDirector.say(enemyName + ": " + enemyCurrentHp + "/" + enemyMaxHp);
+		GameDirector.waitSeconds(1);
+		GameDirector.say("What will you do?");
 		ArrayList<Skill> playerSkillSet = GameDirector.getPlayer().getSkillSet();
-		String playerOptions = new String();
-		for (int i = 0; i < playerSkillSet.size(); i++) {
-			playerOptions += i + " - " + playerSkillSet.get(i).name();
+		// end startTurn() function;
+		// start getPlayerAction() function
+		while (true) {
+			try {
+				for (int i = 0; i < playerSkillSet.size(); i++) {
+					GameDirector.say(i+1 + " - " + playerSkillSet.get(i).name());
+				}
+				castSkillIndex = GameDirector.waitInt();
+				damageDealt = GameDirector.getPlayer().castSkill(castSkillIndex-1, currentFloor.getEnemy()); // [Needs refactoring to allow multiple entities as target.]
+																							   				 // Accesses castSkillIndex-1 because player input starts at 1, not 0.
+				break;
+			}
+			catch(Exception e) {
+				GameDirector.say("Invalid input. Please choose a skill to use.");
+				GameDirector.say("Returning to skill selection screen");
+				GameDirector.waitSeconds(1.5);
+			}
 		}
+		// end getPlayerAction() function
+		// start printActionResult() function
+		GameDirector.say("Your " + playerSkillSet.get(castSkillIndex-1).getName() + " dealt " + damageDealt + " damage!");
+		// end printActionResult() function
 		return true;
 	}
 

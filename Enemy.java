@@ -73,4 +73,10 @@ public class Enemy extends Actor implements CastSkill {
 		Enemy.addAllowedName("Conta no Vermelho");
 		Enemy.addAllowedName("Paralisação dos Caminhoneiros");
 	}
+	
+	public int castSkill(int index, Actor target) {
+		// Choose random skill;
+		// randomSkill.cast(this, target);
+		return 2;
+	}
 }
