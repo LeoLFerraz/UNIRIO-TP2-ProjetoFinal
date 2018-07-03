@@ -14,6 +14,10 @@ public class Enemy extends Actor implements CastSkill {
 		this.setInt(genRandomAttribute());
 		this.updateMaxHp();
 		this.setHp(this.getMaxHp());
+		this.addSkill(Skill.MAGICWAVE);
+		this.addSkill(Skill.SWORDSLASH);
+		this.addSkill(Skill.FIREARROW);
+		this.addSkill(Skill.BURGLARY);
 	}
 	Enemy() { // Generates an enemy with a random name picked from the allowedNames list.
 		super(genRandomEnemyName());
@@ -22,6 +26,10 @@ public class Enemy extends Actor implements CastSkill {
 		this.setInt(genRandomAttribute());
 		this.updateMaxHp();
 		this.setHp(this.getMaxHp());
+		this.addSkill(Skill.MAGICWAVE);
+		this.addSkill(Skill.SWORDSLASH);
+		this.addSkill(Skill.FIREARROW);
+		this.addSkill(Skill.BURGLARY);
 	}
 	
 	// Getters:
@@ -77,6 +85,6 @@ public class Enemy extends Actor implements CastSkill {
 	public int castSkill(int index, Actor target) {
 		// Choose random skill;
 		// randomSkill.cast(this, target);
-		return 2;
+		return this.getSkillSet().get(index).cast(this, target);
 	}
 }

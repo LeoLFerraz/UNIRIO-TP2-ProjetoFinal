@@ -235,6 +235,7 @@ public abstract class GameDirector {
 		do {
 			playerWins = GameDirector.nextFloor();
 		} while (playerWins);
+		// When the player finally dies, goToGameOverScreen();
 	}
 	
 	private static boolean nextFloor() { // True for player wins, false for player loses
@@ -279,35 +280,72 @@ public abstract class GameDirector {
 		int playerMaxHp = GameDirector.getPlayer().getMaxHp();
 		int castSkillIndex;
 		int damageDealt;
+		int turnResult = 0;
 		// start startTurn() function;
-		GameDirector.say(playerName + ": " + playerCurrentHp + "/" + playerMaxHp);
-		GameDirector.say(enemyName + ": " + enemyCurrentHp + "/" + enemyMaxHp);
-		GameDirector.waitSeconds(1);
-		GameDirector.say("What will you do?");
-		ArrayList<Skill> playerSkillSet = GameDirector.getPlayer().getSkillSet();
-		// end startTurn() function;
-		// start getPlayerAction() function
-		while (true) {
-			try {
-				for (int i = 0; i < playerSkillSet.size(); i++) {
-					GameDirector.say(i+1 + " - " + playerSkillSet.get(i).name());
+		while (turnResult == 0) {
+			GameDirector.say(playerName + ": " + playerCurrentHp + "/" + playerMaxHp);
+			GameDirector.say(enemyName + ": " + enemyCurrentHp + "/" + enemyMaxHp);
+			GameDirector.waitSeconds(1);
+			GameDirector.say("What will you do?");
+			ArrayList<Skill> playerSkillSet = GameDirector.getPlayer().getSkillSet();
+			// end startTurn() function;
+			// start getPlayerAction() function
+			while (true) {
+				try {
+					for (int i = 0; i < playerSkillSet.size(); i++) {
+						GameDirector.say(i+1 + " - " + playerSkillSet.get(i).name());
+					}
+					castSkillIndex = GameDirector.waitInt();
+					damageDealt = GameDirector.getPlayer().castSkill(castSkillIndex-1, currentFloor.getEnemy()); // [Needs refactoring to allow multiple entities as target.]
+																								   				 // Accesses castSkillIndex-1 because player input starts at 1, not 0.
+					break;
 				}
-				castSkillIndex = GameDirector.waitInt();
-				damageDealt = GameDirector.getPlayer().castSkill(castSkillIndex-1, currentFloor.getEnemy()); // [Needs refactoring to allow multiple entities as target.]
-																							   				 // Accesses castSkillIndex-1 because player input starts at 1, not 0.
-				break;
+				catch(Exception e) {
+					GameDirector.say("Invalid input. Please choose a skill to use.");
+					GameDirector.say("Returning to skill selection screen");
+					GameDirector.waitSeconds(1.5);
+				}
 			}
-			catch(Exception e) {
-				GameDirector.say("Invalid input. Please choose a skill to use.");
-				GameDirector.say("Returning to skill selection screen");
-				GameDirector.waitSeconds(1.5);
-			}
+			// end getPlayerAction() function
+			// start printActionResult() function
+			GameDirector.say("Your " + playerSkillSet.get(castSkillIndex-1).getName() + " dealt " + damageDealt + " damage!");
+			// end printActionResult() function
+			enemyCurrentHp = currentFloor.getEnemyCurrentHp();
+			turnResult = endTurn(currentFloor);
+			playerCurrentHp = GameDirector.getPlayer().getCurHp();
 		}
-		// end getPlayerAction() function
-		// start printActionResult() function
-		GameDirector.say("Your " + playerSkillSet.get(castSkillIndex-1).getName() + " dealt " + damageDealt + " damage!");
-		// end printActionResult() function
-		return true;
+		if (turnResult == 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private static int endTurn(Floor currentFloor) { // [NEEDS REFACTORING. This probably shouldn't be returning a "code" so that the caller can identify
+													 // The appropriate action to be taken.]
+		if (GameDirector.getPlayer().getCurHp() <= 0) {
+			GameDirector.say("That last hit shook you up...");
+			return 2;
+		}
+		else if (currentFloor.getEnemyCurrentHp() <= 0) {
+			GameDirector.say("Your last hit killed the " + currentFloor.getEnemyName() + "...");
+			GameDirector.waitSeconds(1.5);
+			GameDirector.say("Past his body, you see another set of stairs leading to the next level of the dungeon.");
+			GameDirector.getPlayer().setHp(GameDirector.getPlayer().getMaxHp());
+			GameDirector.waitSeconds(1.5);
+			return 1;
+		}
+		else {
+			int enemySkillCastIndex = (int)Math.floor(Math.random()*3);
+			Skill enemySkillCast = currentFloor.getEnemy().getSkillSet().get(enemySkillCastIndex);
+			int damageReceived = currentFloor.getEnemy().castSkill(enemySkillCastIndex, GameDirector.getPlayer());
+			GameDirector.say("The " + currentFloor.getEnemyName() + " casts " + enemySkillCast.getName() + "...");
+			GameDirector.say("You receive " + damageReceived + " damage!");
+			GameDirector.getPlayer().modifyHp(damageReceived*-1);
+			GameDirector.waitSeconds(1.5);
+			return 0;
+		}
 	}
 
 		// Execution/Testing Methods:
