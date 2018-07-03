@@ -1,11 +1,12 @@
 package corepckg;
+import java.util.ArrayList;
 
-public enum PlayerClass {
+public enum PlayerClass { // [NEED TO REWORK THE SKILL ACCESS TO USE SKILL CODE, NOT ENUMERATOR NAME.]
 	// Instances:
-	WARRIOR("Warrior", 20, 15, 5, 5, 2, 2, 0, 0, 1),
-	ARCHER("Archer", 10, 15, 10, 10, 2, 1, 1, 1, 2),
-	WIZARD("Wizard", 5, 10, 20, 10, 0, 1, 3, 1, 3),
-	THIEF("Thief", 10, 10, 10, 20, 1, 1, 1, 3, 4);
+	WARRIOR("Warrior", 20, 15, 5, 5, 2, 2, 0, 0, 1, Skill.SWORDSLASH, Skill.ASSAULT, Skill.SHIELDSLAM, Skill.PUMMELING),
+	RANGER("Ranger", 10, 15, 10, 10, 2, 1, 1, 1, 2, Skill.FIREARROW, Skill.ICEARROW, Skill.MYSTICPOWDER, Skill.ANIMALCOMPANION),
+	WIZARD("Wizard", 5, 10, 20, 10, 0, 1, 3, 1, 3, Skill.FIREBALL, Skill.EARTHQUAKE, Skill.MAGICSLAM, Skill.MAGICWAVE),
+	THIEF("Thief", 10, 10, 10, 20, 1, 1, 1, 3, 4, Skill.STEALTHASSAULT, Skill.STEALINGMOVE, Skill.BURGLARY, Skill.RIPOSTE);
 	
 	// Attributes:
 	private final String className;
@@ -18,9 +19,10 @@ public enum PlayerClass {
 	private final int intOnLevelUp;
 	private final int luckOnLevelUp;
 	private final int classCode;
+	private final ArrayList<Skill> classSkillSet;
 	
 	// Constructors:
-	PlayerClass(String cName, int bStr, int bEnd, int bInt, int bLuck, int strLU, int endLU, int intLU, int luckLU, int cCode) {
+	PlayerClass(String cName, int bStr, int bEnd, int bInt, int bLuck, int strLU, int endLU, int intLU, int luckLU, int cCode, Skill...skills) {
 		this.className = cName;
 		this.baseStr = bStr;
 		this.baseEnd = bEnd;
@@ -31,6 +33,10 @@ public enum PlayerClass {
 		this.intOnLevelUp = intLU;
 		this.luckOnLevelUp = luckLU;
 		this.classCode = cCode;
+		classSkillSet = new ArrayList<Skill>();
+		for(Skill skill : skills) {
+			classSkillSet.add(skill);
+		}
 	}
 	
 	// Getters:
@@ -67,14 +73,24 @@ public enum PlayerClass {
 		return this.classCode;
 	}
 	
+	public ArrayList<Skill> getClassSkillSet() {
+		return this.classSkillSet;
+	}
+	
 	public static PlayerClass getClassByClassCode(int classCode) {
+		// [NEED REFACTORING]
 		switch(classCode) {
 			case 1: return PlayerClass.WARRIOR;
-			case 2: return PlayerClass.ARCHER;
+			case 2: return PlayerClass.RANGER;
 			case 3: return PlayerClass.WIZARD;
 			case 4: return PlayerClass.THIEF;
 		}
 		// No treatment needed here. This is a composed function only. Treat the caller for null point exception plz.
 		return null;
+	}
+	
+	// Testing:
+	public static void main(String[] args) {
+		System.out.println(PlayerClass.RANGER.classSkillSet);
 	}
 }

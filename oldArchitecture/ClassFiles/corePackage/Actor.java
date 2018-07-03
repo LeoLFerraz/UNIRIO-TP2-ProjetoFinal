@@ -16,6 +16,7 @@ public abstract class Actor {
 	// Constructors:
 	Actor(String newName) {
 		this.name = newName;
+		this.skillSet = new ArrayList<Skill>();
 	}
 	
 	// Getters:
@@ -25,6 +26,10 @@ public abstract class Actor {
 	
 	public int getCurHp() {
 		return this.currentHp;
+	}
+	
+	public int getMaxHp() {
+		return this.maxHp;
 	}
 	
 	public int getStr() {
@@ -53,12 +58,20 @@ public abstract class Actor {
 		this.maxHp = this.endurance*10;
 	}
 	
-	public void addHp(int addition) {
-		int finalHp = this.currentHp + addition;
+	public void modifyHp(int modifier) { // [Should probably return finalHp rather than void...]
+		int finalHp = this.currentHp + modifier;
 		if (finalHp > this.maxHp) {
 			finalHp = this.maxHp;
 		}
+		else if (finalHp < 0) {
+			finalHp = 0;
+		}
 		this.currentHp = finalHp;
+	}
+	
+	public void setHp(int newHp) {
+		// [need validations]
+		this.currentHp = newHp;
 	}
 
 	// Attribute Setters. Ideally, these would get [baseAttr + (attrOnLevelUp * level) + treasureBonusList], but we haven't enough time to re-model the system to
@@ -82,6 +95,10 @@ public abstract class Actor {
 		// [need validations]
 		this.level++;
 		
+	}
+	
+	public void addSkill(Skill skill) {
+		this.skillSet.add(skill);
 	}
 	
 	// Methods:

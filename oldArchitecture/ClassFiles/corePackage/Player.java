@@ -1,4 +1,5 @@
 package corepckg;
+import java.util.ArrayList;
 
 public class Player extends Actor implements CastSkill {
 	// Attributes:
@@ -14,6 +15,11 @@ public class Player extends Actor implements CastSkill {
 		this.setInt(this.playerClass.getBaseInt());
 		this.setLuck(this.playerClass.getBaseLuck());
 		this.updateMaxHp();
+		this.setHp(this.getMaxHp());
+		ArrayList<Skill> classSkillSet = this.getPlayerClass().getClassSkillSet();
+		for(Skill classSkill : classSkillSet) {
+			this.addSkill(classSkill);
+		}
 	}
 	
 	// Getters:
@@ -32,4 +38,9 @@ public class Player extends Actor implements CastSkill {
 	}
 	
 	// Methods:
+	public int castSkill(int skillIndex, Actor target) { // [Needs refactoring to allow multiple entities as target.]
+														 // Returns the damage dealt by the target, which [also needs refactoring, as we should have both damaging and healing spells]
+		return this.getSkillSet().get(skillIndex).cast(this, target);
+	}
+	
 }

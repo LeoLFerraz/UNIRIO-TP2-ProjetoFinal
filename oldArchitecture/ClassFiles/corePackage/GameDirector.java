@@ -1,8 +1,6 @@
 package corepckg;
 import java.util.Scanner;
 import java.util.ArrayList;
-import utilitiespckg.ArrayUtilities;
-import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 public abstract class GameDirector {
 	// This is an abstract, "static" class. All of its methods and attributes are static and it is not meant to be instantiated.
@@ -23,11 +21,13 @@ public abstract class GameDirector {
 									  // 0 = Terminal Interface
 									  // 1 = GUI Interface
 	
-	//private static int gameState; // Used as an intermediary for handling user input and system output;
-								  // [gameState system must be refactored to refer to an ENUM obj with possible values]
-								  // [Once refactored, check setters validations]
-								  // gameState is meant to be used as an auxiliary for the gameEvents queue;
-	//private static ArrayList<gameEvent> gameEvents; // The gameEvents queue is consumed using the GameDirector as a Data Bus. Each message is directed
+	//private static int gameState; // Used for the Event-based Architecture. Not yet implemented.
+									// Used as an intermediary for handling user input and system output;
+								    // [gameState system must be refactored to refer to an ENUM obj with possible values]
+								    // [Once refactored, check setters validations]
+								    // gameState is meant to be used as an auxiliary for the gameEvents queue;
+	//private static ArrayList<gameEvent> gameEvents; // Used for the Event-based Architecture. Not yet implemented.
+													  // The gameEvents queue is consumed using the GameDirector as a Data Bus. Each message is directed
 													  // to the appropriate Class which, in turn, consumes it. Examples are: Player object uses the castSkill
 													  // method, which generates a gameEvent message containing the castSkill parameters and the Player
 													  // object (caller).
@@ -45,7 +45,7 @@ public abstract class GameDirector {
 								  
 	
 	// Getters:
-	/*public static int getGameState() {
+	/*public static int getGameState() { // Used for the Event-based Architecture. Not yet implemented.
 		return GameDirector.gameState;
 	}*/
 	
@@ -58,7 +58,8 @@ public abstract class GameDirector {
 	}
 	
 	// Setters:
-	/*public static void setGameState(int newGS) { // [recheck validations once GS system is refactored to use ENUM]
+	/*public static void setGameState(int newGS) { // Used for the Event-based Architecture. Not yet implemented.
+	// [recheck validations once GS system is refactored to use ENUM]
 		if (newGS < 0) {
 			// [THROW EXCEPTION: INVALID GAME STATE PARAMETER DETECTED]
 			System.out.println("Invalid game state. Aborting.");
@@ -122,10 +123,14 @@ public abstract class GameDirector {
 	
 	public static int waitInt() {
 		// No treatment needed here. This is a composed function only.
+		// [Maybe refeactor this to parse nextLine() to int], as if the player inputs more than one character at a nextInt(), the buffer will
+		// move only one space per nextInt() call, generating unnecessary errors and confusing the user.
 		return userInput.nextInt();
 	}
 	
 	public static int waitInt(int errorCode, int... allowedValues) { // returns errorCode if the provided value is not within allowedVallues
+		// [Maybe refeactor this to parse nextLine() to int], as if the player inputs more than one character at a nextInt(), the buffer will
+		// move only one space per nextInt() call, generating unnecessary errors and confusing the user.
 		int inputValue = waitInt();
 		for(int value : allowedValues)
 			if (value == inputValue) {
@@ -137,6 +142,8 @@ public abstract class GameDirector {
 	
 		// Game Event Handling Methods:
 	public static void startGame() {
+		// populating variables...
+		Enemy.populateAllowedNames();
 		if (GameDirector.getGameInterface() == 0) {
 			startTerminalGame();
 		}
@@ -145,16 +152,16 @@ public abstract class GameDirector {
 		}
 	}
 	
-	public static void startGUIGame() { // Starts the game in Lanterna 2.0's text-based GUI.
+	private static void startGUIGame() { // Starts the game in Lanterna 2.0's text-based GUI.
 		
 	}
 	
-	public static void startTerminalGame() { // Starts the game in the IDE's console interface.
+	private static void printStartingText() {
 		GameDirector.say("Loading textures...");
 		GameDirector.waitSeconds(2);
 		GameDirector.say("Unpacking models...");
 		GameDirector.waitSeconds(2);
-		GameDirector.sayil("Oh wait... "); GameDirector.say("there aren't any. This is a text-based game!");
+		GameDirector.sayil("Oh wait... "); GameDirector.waitSeconds(0.8); GameDirector.say("there aren't any. This is a text-based game!");
 		GameDirector.waitSeconds(2.5);
 		GameDirector.clearTerminal();
 		GameDirector.say("Welcome to the game!");
@@ -166,13 +173,17 @@ public abstract class GameDirector {
 		waitSeconds(1);
 		GameDirector.say("Starting game in 1...");
 		GameDirector.waitSeconds(1);
+	}
+	
+	private static void startTerminalGame() { // Starts the game in the IDE's console interface.
+		printStartingText();
 		GameDirector.goToNewGameScreen(); // [Must be refactored to use gameState]
 	}
 	
 	private static void goToNewGameScreen() {
 		String playerName;
 		PlayerClass playerClass;
-		while(true) { // [atomicize the following block as "renderPlayerNameInputInterface" and adapt goToNewGameScreen to use it.]
+		while(true) { // [atomicize the following block as "renderPlayerNameInput" and adapt goToNewGameScreen to use it.]
 			try {
 				clearTerminal();
 				GameDirector.say("Please, type your desired nickname");
@@ -185,7 +196,7 @@ public abstract class GameDirector {
 				// [maybe insert max attempts?]
 			}
 		}
-		while(true) { // [atomicize the following block as "renderPlayerClassInputInterface" and adapt goToNewGameScreen to use it.]
+		while(true) { // [atomicize the following block as "renderPlayerClassInput" and adapt goToNewGameScreen to use it.]
 			try {
 				GameDirector.say("Choose your class:");
 				GameDirector.say("1 - Warrior: A sturdy, honored fighter that overcomes his foes with use of brute force. Not very smart, though.");
@@ -218,7 +229,85 @@ public abstract class GameDirector {
 	
 	private static void startMatch() {
 		GameDirector.clearTerminal();
-		GameDirector.printCurrentFloor();
+		// Write some introduction here;
+		// And now, starting the game loop:
+		boolean playerWins;
+		do {
+			playerWins = GameDirector.nextFloor();
+		} while (playerWins);
+	}
+	
+	private static boolean nextFloor() { // True for player wins, false for player loses
+		GameDirector.clearTerminal();
+		Floor currentFloor = new Floor(); // Each floor instantiates its own enemies.
+		String currentEnemyName = currentFloor.getEnemyName();
+		GameDirector.say("The stairs take you to Floor #" + Floor.getNumberOfFloors());
+		GameDirector.waitSeconds(1);
+		GameDirector.sayil("Waiting there, at the very center of the room is a... ");
+		GameDirector.waitSeconds(0.7);
+		GameDirector.say(currentEnemyName);
+		GameDirector.say("Starting battle...");
+		boolean playerWins = GameDirector.executeBattle(currentFloor);
+		if (playerWins) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private static boolean executeBattle(Floor currentFloor) { // True for player wins, false for player loses;
+		// Turn 1:
+	// print player name and health
+	// print enemy name and health
+	// print player's options
+	// execute player's choice.
+	// print damage dealt or healed by player's choice.
+	// endTurn(); <-- Checks if either are dead, switches
+		// Turn 2:
+	// print player name and health
+	// print enemy name and health
+	// print 'enemy's turn to act' and delay.
+	// execute enemy's turn.
+	// print damage dealt or healed by the enemy.
+	// endTurn();
+		String enemyName = currentFloor.getEnemyName();
+		int enemyCurrentHp = currentFloor.getEnemyCurrentHp();
+		int enemyMaxHp = currentFloor.getEnemyMaxHp();
+		String playerName = GameDirector.getPlayer().getName();
+		int playerCurrentHp = GameDirector.getPlayer().getCurHp();
+		int playerMaxHp = GameDirector.getPlayer().getMaxHp();
+		int castSkillIndex;
+		int damageDealt;
+		// start startTurn() function;
+		GameDirector.say(playerName + ": " + playerCurrentHp + "/" + playerMaxHp);
+		GameDirector.say(enemyName + ": " + enemyCurrentHp + "/" + enemyMaxHp);
+		GameDirector.waitSeconds(1);
+		GameDirector.say("What will you do?");
+		ArrayList<Skill> playerSkillSet = GameDirector.getPlayer().getSkillSet();
+		// end startTurn() function;
+		// start getPlayerAction() function
+		while (true) {
+			try {
+				for (int i = 0; i < playerSkillSet.size(); i++) {
+					GameDirector.say(i+1 + " - " + playerSkillSet.get(i).name());
+				}
+				castSkillIndex = GameDirector.waitInt();
+				damageDealt = GameDirector.getPlayer().castSkill(castSkillIndex-1, currentFloor.getEnemy()); // [Needs refactoring to allow multiple entities as target.]
+																							   				 // Accesses castSkillIndex-1 because player input starts at 1, not 0.
+				break;
+			}
+			catch(Exception e) {
+				GameDirector.say("Invalid input. Please choose a skill to use.");
+				GameDirector.say("Returning to skill selection screen");
+				GameDirector.waitSeconds(1.5);
+			}
+		}
+		// end getPlayerAction() function
+		// start printActionResult() function
+		GameDirector.say("Your " + playerSkillSet.get(castSkillIndex-1).getName() + " dealt " + damageDealt + " damage!");
+		// end printActionResult() function
+		return true;
 	}
 
 		// Execution/Testing Methods:
