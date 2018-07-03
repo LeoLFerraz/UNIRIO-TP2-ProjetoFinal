@@ -332,8 +332,10 @@ public abstract class GameDirector {
 			GameDirector.say("Your last hit killed the " + currentFloor.getEnemyName() + "...");
 			GameDirector.waitSeconds(1.5);
 			GameDirector.say("Past his body, you see another set of stairs leading to the next level of the dungeon.");
-			GameDirector.getPlayer().setHp(GameDirector.getPlayer().getMaxHp());
 			GameDirector.waitSeconds(1.5);
+			GameDirector.say("Loading next level...");
+			GameDirector.getPlayer().setHp(GameDirector.getPlayer().getMaxHp());
+			GameDirector.waitSeconds(2.5);
 			return 1;
 		}
 		else {
